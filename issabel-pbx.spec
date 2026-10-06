@@ -1,8 +1,8 @@
 %define modname pbx
 Summary: Issabel PBX Module
 Name:    issabel-pbx
-Version: 5.0.0
-Release: 5
+Version: 6.0.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -34,10 +34,10 @@ Requires: psmisc
 # commands: /usr/bin/sqlite3
 Requires: sqlite
 
-# commands: /sbin/chkconfig
+# commands: /usr/sbin/chkconfig
 Requires: chkconfig
 
-Requires: /sbin/pidof
+Requires: /usr/sbin/pidof
 
 Obsoletes: elastix-pbx
 
@@ -57,7 +57,7 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/asterisk/moh
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 
 # ** /bin path ** #
-mkdir -p $RPM_BUILD_ROOT/bin
+mkdir -p $RPM_BUILD_ROOT/usr/bin
 
 # Files provided by all Issabel modules
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/
@@ -84,8 +84,8 @@ chmod 755 $RPM_BUILD_ROOT/etc/cron.daily/*
 rmdir setup/etc/cron.daily/
 
 # ** asterisk.reload file ** #
-mv setup/bin/asterisk.reload                  $RPM_BUILD_ROOT/bin/
-chmod 755 $RPM_BUILD_ROOT/bin/asterisk.reload
+mv setup/bin/asterisk.reload                  $RPM_BUILD_ROOT/usr/bin/
+chmod 755 $RPM_BUILD_ROOT/usr/bin/asterisk.reload
 rmdir setup/bin
 
 # ** files asterisk for agi-bin and moh ** #
@@ -127,7 +127,7 @@ touch /tmp/migration_version_monitor.info
 rpm -q --queryformat='%{VERSION}\n%{RELEASE}' issabel > /tmp/migration_version_monitor.info
 
 # TODO: TAREA DE POST-INSTALACIÓN
-#useradd -d /var/ftp -M -s /sbin/nologin ftpuser
+#useradd -d /var/ftp -M -s /usr/sbin/nologin ftpuser
 
 # Try to fix mess left behind by previous packages.
 if [ -e /etc/vsftpd.user_list ] ; then
@@ -305,7 +305,7 @@ fi
 %config(noreplace) /etc/httpd/conf.d/*
 %defattr(755, root, root)
 /etc/init.d/festival
-/bin/asterisk.reload
+/usr/bin/asterisk.reload
 /usr/share/issabel/privileged/*
 /var/lib/asterisk/agi-bin/*
 /etc/cron.daily/asterisk_cleanup
