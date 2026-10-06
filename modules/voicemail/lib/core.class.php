@@ -70,7 +70,7 @@ class core_Voicemail
      * Constructor
      *
      */
-    public function core_Voicemail()
+    public function __construct()
     {
         $this->errMsg   = NULL;
         $this->_id_user = NULL;

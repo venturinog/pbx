@@ -38,9 +38,9 @@ class SOAP_Voicemail extends core_Voicemail
      *
      * @param  object   $objSOAPServer     SOAP Server Object
      */
-    public function SOAP_Voicemail($objSOAPServer)
+    public function __construct($objSOAPServer)
     {
-        parent::core_Voicemail();
+        parent::__construct();
         $this->objSOAPServer = $objSOAPServer;
     }
 
