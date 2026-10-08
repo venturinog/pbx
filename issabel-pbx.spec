@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -293,8 +293,13 @@ fi
 %files
 %defattr(-, asterisk, asterisk)
 /etc/asterisk/sip_notify_custom_issabel.conf
-/var/lib/asterisk/*
-/var/lib/asterisk/agi-bin
+# Los directorios /var/lib/asterisk/agi-bin y /var/lib/asterisk/moh NO se
+# declaran: los provee asterisk22 como root:root 0755, y RPM no permite
+# compartir un directorio si difieren el modo o el dueno. Declararlos aqui con
+# asterisk:asterisk hacia que la instalacion abortara con
+#   file /var/lib/asterisk/agi-bin conflicts with file from package asterisk22
+# Se empaquetan solo los ficheros, que es lo que este paquete aporta.
+/var/lib/asterisk/moh/*
 /var/log/festival
 /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_issabel.conf
 /var/www/html/admin/issabel_issabelpbx_auth.php
@@ -311,3 +316,12 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Thu Oct 08 2026 Issabel Foundation <info@issabel.org> - 6.0.0-2
+- Stop declaring /var/lib/asterisk/agi-bin and /var/lib/asterisk/moh. asterisk22
+  provides them as root:root 0755, and RPM rejects sharing a directory when the
+  mode or owner differ, so installation failed with
+  "file /var/lib/asterisk/agi-bin conflicts with file from package asterisk22".
+- Package /var/lib/asterisk/moh/*. It had no entry in %files: the broad
+  /var/lib/asterisk/* glob did not recurse, so the 6 MoH wav files were dropped
+  from the package and rpmbuild aborted with unpackaged files
+  (_unpackaged_files_terminate_build=1).
