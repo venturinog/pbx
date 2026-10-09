@@ -56,6 +56,14 @@ if(is_file("../libs/misc.lib.php") ) {
 //
 if(is_file("../libs/misc.lib.php") && $user!='') {
 
+    // The session was already authenticated by the Issabel framework. Mark it
+    // before including issabelpbx.conf: that include runs bootstrap.php, which
+    // loads every module's functions.inc.php and those abort with
+    // "No direct script access allowed" when ISSABELPBX_IS_AUTH is not defined.
+    if (!defined('ISSABELPBX_IS_AUTH')) {
+        define('ISSABELPBX_IS_AUTH', 'TRUE');
+    }
+
     //    ( $_SERVER['HTTP_SEC_FETCH_DEST'] <> 'document' || ( preg_match("/admin\/config.php/",$_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_SEC_FETCH_SITE'] == 'same-origin') )) 
     $allow_direct_access = '1';
 
@@ -77,10 +85,6 @@ if(is_file("../libs/misc.lib.php") && $user!='') {
     $amp_conf['AUTHTYPE']='none'; // so it does not show the logout button in menu
     $amp_conf['SHOWLANGUAGE']=false; // so it does not show lanuage selection in menu
     unset($no_auth);
-
-    if (!defined('ISSABELPBX_IS_AUTH')) {
-        define('ISSABELPBX_IS_AUTH', 'TRUE');
-    }
 
     $_SESSION['AMP_user'] = new ampuser($username);
     $_SESSION['AMP_user']->clearSections();
