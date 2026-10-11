@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,10 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Sat Oct 10 2026 Issabel Foundation <info@issabel.org> - 6.0.0-4
+- Monitoring: make the chart follow the dark theme (canvas background and
+  Chart.js text/grid colours) and use the official brand purple (#572364).
+
 * Thu Oct 08 2026 Issabel Foundation <info@issabel.org> - 6.0.0-2
 - Stop declaring /var/lib/asterisk/agi-bin and /var/lib/asterisk/moh. asterisk22
   provides them as root:root 0755, and RPM rejects sharing a directory when the

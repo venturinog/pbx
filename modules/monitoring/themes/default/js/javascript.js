@@ -290,6 +290,17 @@ function BuildChart(labels, datalabels, all, incoming, outgoing, queue, group, d
        ) {
            window.myChart1.destroy();
        }
+    /* Chart.js v2: colores de texto/líneas según el tema (claro/oscuro) */
+    var issDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    var issFg = issDark ? '#e6e9ee' : '#667382';
+    var issGrid = issDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)';
+    if (window.Chart && Chart.defaults) {
+        if (Chart.defaults.global) Chart.defaults.global.defaultFontColor = issFg;
+        if (Chart.defaults.scale && Chart.defaults.scale.gridLines) {
+            Chart.defaults.scale.gridLines.color = issGrid;
+            Chart.defaults.scale.gridLines.zeroLineColor = issGrid;
+        }
+    }
     var ctx = document.getElementById("myChart").getContext('2d');
     window.myChart1 = new Chart(ctx, {
         type: 'bar',
@@ -339,7 +350,7 @@ function BuildChart(labels, datalabels, all, incoming, outgoing, queue, group, d
         {
             label: datalabels[0], // Name the series
             data: all, // Our values
-            backgroundColor: "#522b76",
+            backgroundColor: "#572364",
             borderWidth: 1
         },
         ]
