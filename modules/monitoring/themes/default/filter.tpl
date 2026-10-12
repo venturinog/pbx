@@ -1,9 +1,9 @@
-<a class="btn btn-primary" data-toggle="collapse" href="#filters" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="filters">
+<a class="btn btn-primary" data-bs-toggle="collapse" href="#filters" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="filters">
 {$FILTER_SHOW}
 <span class="caret"></span>
 </a>
 
-<div class="collapse multi-collapse" id="filters">
+<div class="collapse" id="filters">
 </br>
 <form id=formFilter method="POST" action="">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
