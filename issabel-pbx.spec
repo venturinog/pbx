@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,10 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Mon Oct 12 2026 Issabel Foundation <info@issabel.org> - 6.0.0-7
+- Convert the monitoring filter form to the Modern form kit (labels above
+  fields, section card, Show button on the card footer).
+
 * Mon Oct 12 2026 Issabel Foundation <info@issabel.org> - 6.0.0-6
 - Switch the monitoring filter to the Bootstrap 5 collapse attribute
   (data-bs-toggle); the BS3 data-toggle was ignored by the modern theme,
