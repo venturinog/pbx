@@ -1,10 +1,8 @@
 {literal}
 <script type="text/javascript">
 <!-- Original:  Gregor (legreg@legreg.de) -->
-
 <!-- This script and many more are available free online at -->
 <!-- The JavaScript Source!! http://javascript.internet.com -->
-
 <!-- Begin
 var ie4 = (document.all) ? true : false;
 var ns4 = (document.layers) ? true : false;
@@ -38,67 +36,85 @@ if (ns6) {
 //  End -->
 </script>
 {/literal}
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
-    <tr>
-        <td align="left">
-            {if $Show}
-                <input class="button" type="submit" name="add_conference" value="{$SAVE}">&nbsp;&nbsp;&nbsp;&nbsp;
-            {/if}
-            <input class="button" type="submit" name="cancel" value="{$CANCEL}">
-        </td>
 
+<div class="iss-form">
+  <div class="iss-form__toolbar">
     {if $mode ne 'view'}
-	<td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+      <span class="iss-form__hint"><span class="iss-required">*</span> {$REQUIRED_FIELD}</span>
     {/if}
-    </tr>
-    <tr><td>
-        <table width="99%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
-            <tr>
-                <td align="left" width="20%"><b>{$conference_name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
-                <td class="required" align="left">{$conference_name.INPUT}</td>
-                <td align="left"><b>{$conference_owner.LABEL}: </b></td>
-                <td align="left">{$conference_owner.INPUT}</td>
-            </tr>
-            <tr>
-                <td align="left"><b>{$moderator_pin.LABEL}: </b></td>
-                <td align="left">{$moderator_pin.INPUT}</td>
-                <td align="left"><b>{$moderator_options_1.LABEL}</b></td>
-                <td align="left">
-                    {$moderator_options_1.INPUT}{$announce}&nbsp;&nbsp;&nbsp;
-                    {$moderator_options_2.INPUT}{$record}
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><b>{$user_pin.LABEL}: </b></td>
-                <td align="left">{$user_pin.INPUT}</td>
-                <td align="left"><b>{$user_options_1.LABEL}: </b></td>
-                <td align="left">
-                    {$user_options_1.INPUT}{$announce}&nbsp;&nbsp;&nbsp;
-                    {$user_options_2.INPUT}{$listen_only}&nbsp;&nbsp;&nbsp;
-                    {$user_options_3.INPUT}{$wait_for_leader}
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><b>{$start_time.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
-                <td align="left">{$start_time.INPUT}</td>
-                <td align="left"><b>{$duration.LABEL}: </b></td>
-                <td align="left">
-                    {$duration.INPUT}&nbsp;:
-                    {$duration_min.INPUT}
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><b>{$conference_number.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
-                <td align="left">{$conference_number.INPUT}</td>
-                <td align="left"><b>{$max_participants.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
-                <td align="left">{$max_participants.INPUT}</td>
-            </tr>
+    <div class="iss-form__buttons">
+      {if $Show}
+        <input class="button" type="submit" name="add_conference" value="{$SAVE}">
+      {/if}
+      <input class="button" type="submit" name="cancel" value="{$CANCEL}">
+    </div>
+  </div>
+
+  <section class="iss-card">
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field">
+        <span class="iss-field__label">{$conference_name.LABEL}{if $mode ne 'view'}&nbsp;<span class="iss-required">*</span>{/if}</span>
+        <span class="iss-field__control">{$conference_name.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$conference_owner.LABEL}</span>
+        <span class="iss-field__control">{$conference_owner.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$moderator_pin.LABEL}</span>
+        <span class="iss-field__control">{$moderator_pin.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$moderator_options_1.LABEL}</span>
+        <span class="iss-field__control">
+          <span class="iss-inline-field">{$moderator_options_1.INPUT}{$announce}</span>
+          <span class="iss-inline-field">{$moderator_options_2.INPUT}{$record}</span>
+        </span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$user_pin.LABEL}</span>
+        <span class="iss-field__control">{$user_pin.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$user_options_1.LABEL}</span>
+        <span class="iss-field__control">
+          <span class="iss-inline-field">{$user_options_1.INPUT}{$announce}</span>
+          <span class="iss-inline-field">{$user_options_2.INPUT}{$listen_only}</span>
+          <span class="iss-inline-field">{$user_options_3.INPUT}{$wait_for_leader}</span>
+        </span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$start_time.LABEL}{if $mode ne 'view'}&nbsp;<span class="iss-required">*</span>{/if}</span>
+        <span class="iss-field__control">{$start_time.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$duration.LABEL}</span>
+        <span class="iss-field__control">
+          <span class="iss-inline-field">
+            <span>{$duration.INPUT}&nbsp;:&nbsp;{$duration_min.INPUT}</span>
+          </span>
+        </span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$conference_number.LABEL}{if $mode ne 'view'}&nbsp;<span class="iss-required">*</span>{/if}</span>
+        <span class="iss-field__control">{$conference_number.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$max_participants.LABEL}{if $mode ne 'view'}&nbsp;<span class="iss-required">*</span>{/if}</span>
+        <span class="iss-field__control">{$max_participants.INPUT}</span>
+      </div>
+
 {if $WEBCONF_CONTENT}
-            <tr><td><input type="checkbox" name="enable_webconf" id="enable_webconf" {$WEBCONF_SELECTED} {literal} onclick="if (this.checked) { showlayer('webconf_options'); } else { hidelayer('webconf_options'); } " {/literal} /><b>{$enable_web_conf}</b></td><td colspan="3">&nbsp;</td></tr>
-            <tr><td colspan="4"><div id="webconf_options"><hr/>{$WEBCONF_CONTENT}</div></td></tr>
+      <div class="iss-field iss-field--full">
+        <label class="iss-inline-field">
+          <input type="checkbox" name="enable_webconf" id="enable_webconf" {$WEBCONF_SELECTED} {literal} onclick="if (this.checked) { showlayer('webconf_options'); } else { hidelayer('webconf_options'); } " {/literal} />
+          {$enable_web_conf}
+        </label>
+      </div>
+      <div class="iss-field iss-field--full" id="webconf_options">{$WEBCONF_CONTENT}</div>
 {literal}
 <script type="text/javascript">
-<!-- 
+<!--
 
 if (document.getElementById('enable_webconf').checked) {
     showlayer('webconf_options');
@@ -110,6 +126,6 @@ if (document.getElementById('enable_webconf').checked) {
 </script>
 {/literal}
 {/if}
-        </table>
-    </td></tr>
-</table>
+    </div>
+  </section>
+</div>

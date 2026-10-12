@@ -1,10 +1,9 @@
-<fieldset>
-    <legend><img src="images/call.png" width="22" height="22" />&nbsp;<b>{$LBL_EXTENSION_FIELDS}</b></legend>
-    <table width="99%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-        <tr>
-            <td width="20%">{$extension.LABEL}:</td>
-            <td width="30%">{$extension.INPUT}</td>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-    </table>
-</fieldset>
+<section class="iss-card">
+    <header class="iss-card__header"><i class="ti ti-phone"></i> {$LBL_EXTENSION_FIELDS}</header>
+    <div class="iss-card__body iss-formgrid">
+        <div class="iss-field">
+            <span class="iss-field__label">{$extension.LABEL}</span>
+            <span class="iss-field__control">{$extension.INPUT}</span>
+        </div>
+    </div>
+</section>
