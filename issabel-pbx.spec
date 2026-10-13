@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,9 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Tue Oct 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-10
+- Match the framework's default maximum of eight in-app tabs.
+
 * Tue Oct 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-9
 - Share the resolved PBX menu item with the embedded tab bridge.
 

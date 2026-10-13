@@ -241,7 +241,7 @@ if(is_file("../libs/misc.lib.php") && $user!='') {
         if (is_file($tabsClass)) require_once $tabsClass;
     }
     if (class_exists('issabelTabs', false) && issabelTabs::isValidInstanceId($instanceId)) {
-        $maxTabs = isset($arrConf['issabel_max_tabs']) ? (int)$arrConf['issabel_max_tabs'] : 6;
+        $maxTabs = isset($arrConf['issabel_max_tabs']) ? (int)$arrConf['issabel_max_tabs'] : 8;
         $oIssabelTabs = new issabelTabs(session_id(), $instanceId, null, $maxTabs);
         $tabState = $oIssabelTabs->getState();
         $tabId = isset($_REQUEST['iss_tab']) && ctype_digit((string)$_REQUEST['iss_tab'])
