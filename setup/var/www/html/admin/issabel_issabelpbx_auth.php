@@ -230,6 +230,39 @@ if(is_file("../libs/misc.lib.php") && $user!='') {
             writeLOG("audit.log", "PBX $user: User $user applied changes from $ipaddr.");
         }
     }
+
+    // The shared wrapper exposes tab context to every standard FreePBX view.
+    // There is intentionally no module-specific integration here.
+    $instanceId = isset($_REQUEST['iss_instance']) && is_string($_REQUEST['iss_instance'])
+        ? $_REQUEST['iss_instance'] : '';
+    if (!class_exists('issabelTabs', false) && $instanceId !== '' &&
+        preg_match('/^[a-f0-9]{32}$/D', $instanceId)) {
+        $tabsClass = dirname(__FILE__).'/../libs/issabelTabs.class.php';
+        if (is_file($tabsClass)) require_once $tabsClass;
+    }
+    if (class_exists('issabelTabs', false) && issabelTabs::isValidInstanceId($instanceId)) {
+        $maxTabs = isset($arrConf['issabel_max_tabs']) ? (int)$arrConf['issabel_max_tabs'] : 6;
+        $oIssabelTabs = new issabelTabs(session_id(), $instanceId, null, $maxTabs);
+        $tabState = $oIssabelTabs->getState();
+        $tabId = isset($_REQUEST['iss_tab']) && ctype_digit((string)$_REQUEST['iss_tab'])
+            ? (int)$_REQUEST['iss_tab'] : (int)$tabState['activeTab'];
+        $tabExists = false;
+        foreach ($tabState['tabs'] as $tabEntry) {
+            if ((int)$tabEntry['id'] === $tabId) { $tabExists = true; break; }
+        }
+        if (!$tabExists) $tabId = (int)$tabState['activeTab'];
+
+        $display = isset($_REQUEST['display']) && is_string($_REQUEST['display']) ? $_REQUEST['display'] : '';
+        $extdisplay = isset($_REQUEST['extdisplay']) && is_string($_REQUEST['extdisplay']) ? $_REQUEST['extdisplay'] : '';
+        $GLOBALS['ISSABEL_TABS_EMBEDDED'] = true;
+        $GLOBALS['ISSABEL_TABS_OBJECT'] = $oIssabelTabs;
+        $GLOBALS['ISSABEL_TABS_DATA'] = $oIssabelTabs->jsonForClient()['tabs'];
+        $GLOBALS['ISSABEL_TABS_CURRENT'] = $tabId;
+        $GLOBALS['ISSABEL_TABS_INSTANCE'] = $instanceId;
+        $GLOBALS['ISSABEL_TABS_CURRENT_KEY'] = $oIssabelTabs->normalizeKey($display, $extdisplay);
+        $GLOBALS['ISSABEL_TABS_CURRENT_DISPLAY'] = $display;
+        $GLOBALS['ISSABEL_TABS_CURRENT_EXTDISPLAY'] = $extdisplay;
+    }
 } else {
     if($allow_direct_access==0) {
 	$display='noaccess';

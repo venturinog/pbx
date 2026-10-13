@@ -2,13 +2,13 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 7
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Requires(pre): issabel-framework >= 5.0.0-1
+Requires(pre): issabel-framework >= 6.0.0-22
 Requires(pre): issabel-my_extension >= 5.0.0-1
 Requires(pre): issabel-system >= 5.0.0-1
 Requires(pre): vsftpd
@@ -316,6 +316,12 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Tue Oct 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-9
+- Share the resolved PBX menu item with the embedded tab bridge.
+
+* Tue Oct 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-8
+- Pass the active tab context through the shared PBX authentication wrapper.
+
 * Mon Oct 12 2026 Issabel Foundation <info@issabel.org> - 6.0.0-7
 - Convert the monitoring filter form to the Modern form kit (labels above
   fields, section card, Show button on the card footer).
