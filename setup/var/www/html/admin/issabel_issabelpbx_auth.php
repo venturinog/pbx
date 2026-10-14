@@ -32,6 +32,10 @@ if(is_file("../libs/misc.lib.php") ) {
         $lang = get_language('../');
         $finallang = isset($mylang[$lang])?$mylang[$lang]:$lang."_".strtoupper($lang);
         setcookie("lang", $finallang);
+        // setcookie() does not refresh $_COOKIE for the current request, and
+        // set_language() reads $_COOKIE['lang'] below: without this the first
+        // request after a language change still renders in the old language.
+        $_COOKIE['lang'] = $finallang;
     }
 
     $pDB = new paloDB($dsnAsterisk);
