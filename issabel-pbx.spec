@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 11
+Release: 12
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,7 +124,7 @@ mv menu.xml   $RPM_BUILD_ROOT/usr/share/issabel/module_installer/%{name}-%{versi
 %pre
 #Para migrar monitor
 touch /tmp/migration_version_monitor.info
-rpm -q --queryformat='%{VERSION}\n%{RELEASE}' issabel > /tmp/migration_version_monitor.info
+rpm -q --queryformat='%%{VERSION}\n%%{RELEASE}' issabel > /tmp/migration_version_monitor.info
 
 # TODO: TAREA DE POST-INSTALACIÓN
 #useradd -d /var/ftp -M -s /usr/sbin/nologin ftpuser
@@ -138,7 +138,7 @@ fi
 mkdir -p /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/
 touch /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/preversion_%{modname}.info
 if [ $1 -eq 2 ]; then
-    rpm -q --queryformat='%{VERSION}-%{RELEASE}' %{name} > /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/preversion_%{modname}.info
+    rpm -q --queryformat='%%{VERSION}-%%{RELEASE}' %{name} > /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/preversion_%{modname}.info
 fi
 
 %post
@@ -316,6 +316,12 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Fri Oct 16 2026 Issabel Foundation <info@issabel.org> - 6.0.0-12
+- Escape the rpm queryformat used to record the pre-version on upgrade.
+  The VERSION and RELEASE macros were expanded at build time, so %pre always
+  wrote the new version and issabel-dbprocess skipped every version_sql
+  migration. They are now escaped so rpm expands them at run time.
+
 * Tue Oct 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-10
 - Match the framework's default maximum of eight in-app tabs.
 
