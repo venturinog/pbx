@@ -62,9 +62,13 @@ function listarArchivos($module_name, $smarty, $local_templates_dir, $sDirectori
 {
     // Función que rechaza los directorios punto y doble punto
     function _reject_dotdirs($s) { return !($s == '.' || $s == '..'); }
-    $listaArchivos = (file_exists($sDirectorio) && is_dir($sDirectorio))
-        ? array_filter(scandir($sDirectorio), '_reject_dotdirs')
-        : NULL;
+    /* scandir() devuelve false si el directorio no se puede abrir; pasarlo a
+     * array_filter() es un TypeError fatal en PHP 8. */
+    $listaArchivos = NULL;
+    if (file_exists($sDirectorio) && is_dir($sDirectorio) && is_readable($sDirectorio)) {
+        $escaneado = scandir($sDirectorio);
+        if (is_array($escaneado)) $listaArchivos = array_filter($escaneado, '_reject_dotdirs');
+    }
     if (!is_array($listaArchivos)) {
         $smarty->assign("msj_err", _tr('This is not a valid directory'));
     }
@@ -156,16 +160,16 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
 {
     $sNombreArchivo = '';
     $sMensajeStatus = '';
+    $bStatusError = FALSE;
 
     if(isset($_POST['Reload'])){
         $parameters = array('Command'=>"module reload");
         $result = AsteriskManagerAPI("Command",$parameters,true);
         if($result){
-            $smarty->assign("mb_title", "Message");
-            $smarty->assign("mb_message", _tr("Asterisk has been reloaded"));
+            $sMensajeStatus .= _tr("Asterisk has been reloaded").'<br/>';
         }else{
-            $smarty->assign("mb_title", "ERROR");
-            $smarty->assign("mb_message", _tr("Error when connecting to Asterisk Manager"));
+            $sMensajeStatus .= _tr("Error when connecting to Asterisk Manager").'<br/>';
+            $bStatusError = TRUE;
         }
     }
 
@@ -174,6 +178,7 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
         if (isset($_POST['Guardar'])) {
             if (!isset($_POST['basename']) || trim($_POST['basename']) == '') {
                 $sMensajeStatus .= _tr('Please write the file name').'<br/>';
+                $bStatusError = TRUE;
             } else {
                 $sNombreArchivo = basename($_POST['basename'].'.conf');
                 /* Los datos del archivo se envían desde el navegador con líneas
@@ -182,6 +187,7 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
                 if (file_put_contents($sDirectorio.$sNombreArchivo,
                         str_replace("\r\n", "\n", $_POST['content'])) === FALSE) {
                     $sMensajeStatus .= _tr("This file doesn't have permisses to write").'<br/>';
+                    $bStatusError = TRUE;
                 } else {
                     $sMensajeStatus .= _tr("The changes was saved in the file").'<br/>';
                 }
@@ -203,17 +209,20 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
                 file_put_contents($sDirectorio.$sNombreArchivo,
                     str_replace("\r\n", "\n", $_POST['content'])) === FALSE) {
                 $sMensajeStatus .= _tr("This file doesn't have permisses to write").'<br/>';
+                $bStatusError = TRUE;
             } else {
                 $sMensajeStatus .= _tr("The changes was saved in the file").'<br/>';
             }
         } else {
             if (!is_writable($sDirectorio.$sNombreArchivo)) {
                 $sMensajeStatus .= _tr("This file doesn't have permisses to write").'<br/>';
+                $bStatusError = TRUE;
             }
         }
         $sContenido = file_get_contents($sDirectorio.$sNombreArchivo);
         if ($sContenido === FALSE) {
             $sMensajeStatus .= _tr("This file doesn't have permisses to read").'<br/>';
+            $bStatusError = TRUE;
         }
         if (!isset($_POST['content'])) $_POST['content'] = $sContenido;
         $_POST['basename'] = basename($sNombreArchivo);
@@ -251,6 +260,7 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
     $smarty->assign('RELOAD_ASTERISK', _tr('Reload Asterisk'));
     $smarty->assign('LABEL_BACK', _tr('Back'));
     $smarty->assign('msg_status', $sMensajeStatus);
+    $smarty->assign('MSG_STATUS_TYPE', $bStatusError ? 'error' : 'success');
     $smarty->assign('icon',"images/user.png");
 
     return $oForm->fetchForm("$local_templates_dir/file_editor.tpl", _tr("File Editor"), $_POST);

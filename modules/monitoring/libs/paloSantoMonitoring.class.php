@@ -358,10 +358,10 @@ private function _rutaAbsolutaGrabacion($file)
             // $datedir puede ser "" si no se resolvió una fecha
             if ($datedir != '') {
                 $r = glob($basedir.$datedir.$archivoBuscar.'*');
-                if (count($r) > 0) return $r[0];
+                if (is_array($r) && count($r) > 0) return $r[0];
             }
             $r = glob($basedir.$archivoBuscar.'*');
-            if (count($r) > 0) return $r[0];
+            if (is_array($r) && count($r) > 0) return $r[0];
         }
 
         return NULL;

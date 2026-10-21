@@ -1,21 +1,40 @@
 {if $accion eq "show_callers"}
-<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="letra12">
-        <td width="5%" align="right"><input class="button" type="submit" name="update_show_callers" value="{$UPDATE}"></td>
-        <td width="5%" align="right"><input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-        <td width="10%" align="right"><input class="button" type="submit" name="caller_invite" value="{$INVITE_CALLER}"></td>
-        <td width="10%" align="left" nowrap>{$device.INPUT}</td>
-        <td align="left"><input class="button" type="submit" name="callers_kick_all" value="{$KICK_ALL}"></td>
-    </tr>
-</table>
+<div class="iss-form" style="margin-bottom:1.25rem;">
+  <section class="iss-card">
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field">
+        <span class="iss-field__label">{$device.LABEL}</span>
+        <span class="iss-field__control">{$device.INPUT}</span>
+      </div>
+    </div>
+    <div class="iss-form__toolbar" style="border-top:1px solid var(--iss-border); margin:0; padding:12px 18px; border-bottom:0;">
+      <div class="iss-form__buttons">
+        <input class="button" type="submit" name="update_show_callers" value="{$UPDATE}">
+        <input class="button" type="submit" name="cancel" value="{$CANCEL}">
+        <input class="button" type="submit" name="caller_invite" value="{$INVITE_CALLER}">
+        <input class="button" type="submit" name="callers_kick_all" value="{$KICK_ALL}">
+      </div>
+    </div>
+  </section>
+</div>
 {else}
-<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="letra12">
-        <td width="3%" align="right">{$conference.LABEL}: </td>
-        <td width="10%" align="left" nowrap>{$conference.INPUT}</td>
-        <td width="5%" align="right">{$filter.LABEL}: </td>
-        <td width="10%" align="left" nowrap>{$filter.INPUT}</td>
-        <td align="left"><input class="button" type="submit" name="show" value="{$SHOW}"></td>
-    </tr>
-</table>
+<div class="iss-form" style="margin-bottom:1.25rem;">
+  <section class="iss-card">
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field">
+        <span class="iss-field__label">{$conference.LABEL}</span>
+        <span class="iss-field__control">{$conference.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$filter.LABEL}</span>
+        <span class="iss-field__control">{$filter.INPUT}</span>
+      </div>
+    </div>
+    <div class="iss-form__toolbar" style="border-top:1px solid var(--iss-border); margin:0; padding:12px 18px; border-bottom:0;">
+      <div class="iss-form__buttons">
+        <input class="button" type="submit" name="show" value="{$SHOW}">
+      </div>
+    </div>
+  </section>
+</div>
 {/if}

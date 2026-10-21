@@ -60,8 +60,10 @@ function _moduleContent(&$smarty, $module_name)
         if (hasModulePrivilege($user, $module_name, 'reportany'))
             $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
         else{
-            $smarty->assign("mb_message", "<b>"._tr("contact_admin")."</b>");
-            return "";
+            // Una página en blanco deja al usuario sin explicación: mb_message
+            // lo pinta la shell y bajo el layout de pestañas no se ve.
+            return '<div class="iss-alert iss-alert--warning"><div class="iss-alert__content">'
+                ._tr("contact_admin").'</div></div>';
         }
     }
 
@@ -85,9 +87,20 @@ function _moduleContent(&$smarty, $module_name)
 function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension)
 {
     require_once "libs/paloSantoForm.class.php";
-    $arrUniqueids=explode(',', $_POST['uniqueid']);    
-    if (isset($_POST['submit_eliminar']) && isset($_POST['uniqueid']) &&
-        is_array($arrUniqueids) && count($arrUniqueids) > 0) {
+
+    // El grid de grabaciones envía los uniqueid seleccionados como una lista
+    // separada por comas en un único campo. Se lee sólo cuando la acción de
+    // borrado está presente: en cualquier otra visita la clave no existe y
+    // explode() recibiría null (deprecado en PHP 8.1).
+    $arrUniqueids = array();
+    if (isset($_POST['submit_eliminar']) && isset($_POST['uniqueid'])
+        && is_string($_POST['uniqueid'])) {
+        foreach (explode(',', $_POST['uniqueid']) as $id) {
+            $id = trim($id);
+            if (preg_match('/^[[:digit:]]+\.[[:digit:]]+$/', $id)) $arrUniqueids[] = $id;
+        }
+    }
+    if (count($arrUniqueids) > 0) {
         deleteRecord($smarty, $module_name, $local_templates_dir, $pDB, $pACL, $arrConf, $user, $extension, $arrUniqueids);
     }
 
@@ -159,7 +172,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
         $_POST['date_end'] = " ";
 
     if (!empty($pACL->errMsg)) {
-        echo "ERROR DE ACL: $pACL->errMsg <br>";
+        echo '<div class="iss-alert iss-alert--error"><div class="iss-alert__content">'
+            ._tr('ACL error').': '.htmlentities($pACL->errMsg, ENT_COMPAT, 'UTF-8')
+            .'</div></div>';
     }
 
     $date_initial = date('Y-m-d',strtotime($_POST['date_start']))." 00:00:00";
@@ -202,9 +217,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
             array_unshift($arrTmp, $value['uniqueid']);
 
             // checkbox(id_uniqueid) date time src dst hh:mm:ss rectype namefile
-            if ($arrTmp[3] == '') $arrTmp[3] = "<font color='gray'>"._tr("unknown")."</font>";
-            if ($arrTmp[4] == '') $arrTmp[4] = "<font color='gray'>"._tr("unknown")."</font>";
-            $arrTmp[5] = "<label title='".$value['duration']." "._tr('seconds')."' style='color:green'>".$arrTmp[5]."</label>";
+            if ($arrTmp[3] == '') $arrTmp[3] = '<span class="text-muted">'._tr("unknown").'</span>';
+            if ($arrTmp[4] == '') $arrTmp[4] = '<span class="text-muted">'._tr("unknown").'</span>';
+            $arrTmp[5] = '<label title="'.$value['duration'].' '._tr('seconds').'" class="text-success">'.$arrTmp[5].'</label>';
 
             if ($arrTmp[7] != 'deleted') {
                 $esc_recfile = htmlentities($value['recordingfile'], ENT_COMPAT, 'UTF-8');
@@ -227,7 +242,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
                 $recordingLink = '<span class="recording-check" data-recording-id="'.$esc_uniqueid.'">'.
                     '<span class="recording-pending">...</span>'.
                     '<span class="recording-actions" style="display:none">'.$actions.'</span>'.
-                    '<span class="recording-missing" title="'.$esc_recfile.'" style="display:none;color:red"><b>'.
+                    '<span class="recording-missing" title="'.$esc_recfile.'" style="display:none"><b class="text-danger">'.
                     htmlentities(_tr('Recording missing'), ENT_COMPAT, 'UTF-8').'</b></span>'.
                     '</span>';
             } else {
@@ -253,27 +268,26 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $_POST["filter_value_recordingfile"] = $filter_recordingfile;
     $_POST["limit"]                  = $limit;
 
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
    $valueLimit = number_format($limit,0,",",".");
     if ($total == $paramFilter['limit']) {
-        $msgLimit =    '<font color=red>'.
-                       '<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>'." ".
+        $msgLimit =    '<span class="text-danger">'.
+                       '<i class="ti ti-info-circle" aria-hidden="true"></i>'." ".
                        _tr("Limit")." = ".$valueLimit.
-                       '</font>';
+                       '</span>';
     } else {
-        $msgLimit =    '<font color=green>'.
-                       '<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>'." ".
+        $msgLimit =    '<span class="text-success">'.
+                       '<i class="ti ti-info-circle" aria-hidden="true"></i>'." ".
                        _tr("Limit")." = ".$valueLimit.
-                       '</font>';
+                       '</span>';
     }
 
     $MsgFilter = "<b>"._tr("Filter applied: ")."</b>".
-    '<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>'." ".
+    '<i class="ti ti-calendar" aria-hidden="true"></i>'." ".
     _tr("Start Date")." = ".$paramFilter['date_start'].", "._tr("End Date")." = ".
     $paramFilter['date_end']." - ".
-    '<span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span>'." ".
+    '<i class="ti ti-phone" aria-hidden="true"></i>'." ".
     $filter_field." = ".$paramFilter['filter_value'] . _tr(ucfirst($paramFilter['filter_value_recordingfile'])) . " - ".
     $msgLimit;
     $smarty->assign("FILTER_SHOW"  , _tr("Show Filter"));

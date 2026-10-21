@@ -1,3 +1,4 @@
+<form method="POST">
 {literal}
 <script type="text/javascript">
 <!-- Original:  Gregor (legreg@legreg.de) -->
@@ -129,3 +130,4 @@ if (document.getElementById('enable_webconf').checked) {
     </div>
   </section>
 </div>
+</form>

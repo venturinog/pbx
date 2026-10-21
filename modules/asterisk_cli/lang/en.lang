@@ -28,5 +28,6 @@ $arrLangModule=array(
 "Asterisk-Cli"=>"Asterisk-Cli",
 "Command"=> "Command",
 "Execute"=> "Execute",
+"Command denied" => "Command denied",
 );
 ?>

@@ -99,7 +99,7 @@ class paloUserPlugin_extension extends paloSantoUserPluginBase
             (trim($_POST['extension']) == '') ? NULL : trim($_POST['extension']));
         if (!$r) {
             $smarty->assign(array(
-                'mb_title'  =>  'ERROR',
+                'mb_title'  =>  _tr('ERROR'),
                 'mb_message'=>  $this->_pACL->errMsg,
             ));
             return FALSE;

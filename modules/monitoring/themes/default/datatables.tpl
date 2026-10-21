@@ -1,15 +1,3 @@
-<style>
-.nopadding {
-   padding: 0 !important;
-   margin: 0 !important;
-}
-.table-striped > tbody > tr.selected > td,
-.table-striped > tbody > tr.selected > th {
-background-color: #572364;
-background-image: linear-gradient(#cccccc, #b3b3b3, #8c8c8c, #737373);
-}
-</style>
-
 <script>
 var cdrs = {$CDR};
 var lang = "{$LANG}";
@@ -22,53 +10,11 @@ var puedeBorrar = "{$puedeBorrar}";
 {$customJS}
 </script>
 
-<style>
-        #loader {
-            border: 8px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 8px solid #572364;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
+<div class="iss-grid__filtercontrols">
+  <span class="iss-filter-control" id="msgFilter">{$FILTER_MSG}</span>
+</div>
 
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .center {
-            position: relative;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: auto;
-        }
-
-.table th, .table td {
-        font-size: 90%;
-    }
-
-mark {
-      background: purple;
-      color: white;
-}
-#myChart{
-               background-color: var(--tblr-bg-surface, #fff);
-               }
-
-</style>
-
-
-</br>
-<span id="msgFilter">
-    {$FILTER_MSG}
-</span>
-</br>
-</br>
-<table id='CDRreport' class="table table-striped table-bordered table-hover" style="width:100%">
+<table id="CDRreport" class="table table-striped table-bordered table-hover iss-table" style="width:100%">
   <thead>
     <tr>
       <th>{$COLUMNS[0]}</th>
@@ -96,13 +42,13 @@ mark {
 </table>
 <div id="loader" class="center"></div>
 
-<div class="chart-container" id=chart>
-  <canvas id="myChart" height=220></canvas>
+<div class="chart-container" id="chart">
+  <canvas id="myChart" height="220"></canvas>
 </div>
 
-<div class="text-right">
+<div class="d-flex justify-content-end mt-2">
   <button type="button" class="btn btn-link" id="download-pdf2" onclick="downloadPDF2()">
-    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+    <i class="ti ti-chart-bar" aria-hidden="true"></i>
     PDF
   </button>
 </div>

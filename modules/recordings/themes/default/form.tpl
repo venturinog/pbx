@@ -1,3 +1,10 @@
+<form enctype="multipart/form-data" method="POST">
+{if $NOTICE or $NOTICE_HTML}
+<div class="iss-alert iss-alert--{$NOTICE_TYPE|default:'error'}">
+  {if $NOTICE_TITLE}<div class="iss-alert__title">{$NOTICE_TITLE|escape}</div>{/if}
+  <div class="iss-alert__content">{if $NOTICE_HTML}{$NOTICE_HTML}{else}{$NOTICE|escape}{/if}</div>
+</div>
+{/if}
 <div class="iss-form">
   <div class="iss-form__toolbar">
     <div class="iss-form__buttons" style="margin-left:0;">
@@ -69,3 +76,4 @@
         }
     </script>
 {/literal}
+</form>

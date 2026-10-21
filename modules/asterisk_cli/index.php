@@ -29,6 +29,7 @@ function _moduleContent(&$smarty, $module_name)
         'command'   =>  _tr('Command'),
         'txtCommand'=>  htmlspecialchars($cleanedCommand),
         'execute'   =>  _tr('Execute'),
+        'result'    =>  _tr('Result'),
         'icon'      =>  "modules/$module_name/images/pbx_tools_asterisk_cli.png",
     ));
 
@@ -39,7 +40,7 @@ function _moduleContent(&$smarty, $module_name)
         $user = isset($_SESSION['issabel_user']) ? $_SESSION['issabel_user'] : 'unknown';
         if(preg_match("/(originate|system|xmldoc)/i",$cleanedCommand)) {
             writeLOG("audit.log", sprintf('ASTCLI %s Command denied: %s from %s.',$user,escapeshellarg($cleanedCommand),$ipaddr));
-            $result = "Command denied";
+            $result = _tr("Command denied");
         } else {
             exec("/usr/sbin/asterisk -rnx ".escapeshellarg($cleanedCommand), $output, $retval);
             writeLOG("audit.log", sprintf('ASTCLI %s: %s from %s.',$user,escapeshellarg($cleanedCommand),$ipaddr));

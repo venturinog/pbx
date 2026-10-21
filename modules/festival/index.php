@@ -71,9 +71,9 @@ function viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf)
     else
         $_DATA["status"] = "off";
     $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("FESTIVAL_LABELS", json_encode(array('on' => _tr('On'), 'off' => _tr('Off'))));
     $smarty->assign("icon", "modules/$module_name/images/pbx_tools_festival.png");
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Festival"), $_DATA);
-    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    $content = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Festival"), $_DATA);
 
     return $content;
 }
@@ -82,41 +82,48 @@ function changeStatusFestival()
 {
     $pFestival  = new paloSantoFestival();
     $jsonObject = new PaloSantoJSON();
-    $status    = getParameter("status");
-    $message   = "";
+    $status     = getParameter("status");
+
     $arrMessage["button_title"] = _tr("Dismiss");
+    $arrMessage["type"]         = "success";
+    $arrMessage["mb_title"]     = _tr("Message");
+    $arrMessage["mb_message"]   = "";
+
     if($status=="activate"){
-        $arrMessage["mb_message"] = '';
-        $arrMessage["mb_title"] = _tr("Message").":<br/>";
         switch ($pFestival->activateFestival()) {
         case 1:     // Servicio iniciado, se modificó archivo
-            $arrMessage["mb_message"] = _tr("");
         // cae al siguiente caso
         case 0:     // Servicio iniciado, sin modificación
-            $arrMessage["mb_message"] .= _tr("Festival has been successfully activated");
+            $arrMessage["mb_message"] = _tr("Festival has been successfully activated");
             break;
         case -1:    // Error al iniciar servicio
-            $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+            $arrMessage["type"]       = "error";
+            $arrMessage["mb_title"]   = _tr("ERROR");
             $arrMessage["mb_message"] = $pFestival->getError();
             break;
         }
     }
     elseif($status=="deactivate"){
         if(!$pFestival->isFestivalActivated()){
-	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-	    $arrMessage["mb_message"] = _tr("Festival is already deactivated");
-            $jsonObject->set_message($arrMessage);
-	    return $jsonObject->createJSON();
+            $arrMessage["type"]       = "error";
+            $arrMessage["mb_title"]   = _tr("ERROR");
+            $arrMessage["mb_message"] = _tr("Festival is already deactivated");
         }
-        if($pFestival->deactivateFestival()){
-	    $arrMessage["mb_title"] = _tr("Message").":<br/>";
-	    $arrMessage["mb_message"] = _tr("Festival has been successfully deactivated");
+        elseif($pFestival->deactivateFestival()){
+            $arrMessage["mb_message"] = _tr("Festival has been successfully deactivated");
         }
         else{
-	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-	    $arrMessage["mb_message"] = _tr("Festival could not be deactivated");
+            $arrMessage["type"]       = "error";
+            $arrMessage["mb_title"]   = _tr("ERROR");
+            $arrMessage["mb_message"] = _tr("Festival could not be deactivated");
         }
     }
+    else{
+        $arrMessage["type"]       = "error";
+        $arrMessage["mb_title"]   = _tr("ERROR");
+        $arrMessage["mb_message"] = _tr("Unknown action");
+    }
+
     $jsonObject->set_message($arrMessage);
     return $jsonObject->createJSON();
 }

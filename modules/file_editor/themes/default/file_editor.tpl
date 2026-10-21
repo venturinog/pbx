@@ -1,21 +1,31 @@
-<!--Comentario:  He agregado variables para que se muestre la misma vista de la 160-->
 <form method="POST" enctype="multipart/form-data" action="{$url_edit}">
-<table class="message_board" width="99%" border="0" cellspacing="0" cellpadding="4" >
-    <tr>
-        <td class="mb_message">
-            <font size="2px">{$msg_status}</font>
-        </td>
-    </tr>
-    <tr>
-        <td>
-        <a href="{$url_back}&file={$search}" style="text-decoration: none;"><b>&laquo;&nbsp;{$LABEL_BACK}</b></a>
-        <b>{$basename.LABEL}:</b>&nbsp;{$basename.INPUT}{$LABEL_COMPLETADO}&nbsp;&nbsp;
-        <input type="submit" class="button" name="Guardar" value="{$LABEL_SAVE}" />&nbsp;&nbsp;
-        <input type="submit" class="button" name="Reload"  value="{$RELOAD_ASTERISK}" />
-	</td>
-    </tr>
-    <tr>
-        <td>{$content.INPUT}</td>
-    </tr>
-</table>
+<div class="iss-form">
+  {if $msg_status}
+  <div class="iss-alert iss-alert--{$MSG_STATUS_TYPE|default:'error'}">
+    <div class="iss-alert__content">{$msg_status}</div>
+  </div>
+  {/if}
+
+  <div class="iss-form__toolbar">
+    <div class="iss-form__buttons">
+      <a class="button" href="{$url_back}&file={$search}"><i class="ti ti-arrow-left"></i> {$LABEL_BACK}</a>
+      <input class="button" type="submit" name="Guardar" value="{$LABEL_SAVE}">
+      <input class="button" type="submit" name="Reload" value="{$RELOAD_ASTERISK}">
+    </div>
+  </div>
+
+  <section class="iss-card">
+    <header class="iss-card__header"><i class="ti ti-file-text"></i> {$title}</header>
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field iss-field--full">
+        <span class="iss-field__label">{$basename.LABEL}{$LABEL_COMPLETADO}</span>
+        <span class="iss-field__control">{$basename.INPUT}</span>
+      </div>
+      <div class="iss-field iss-field--full">
+        <span class="iss-field__label">{$content.LABEL}</span>
+        <span class="iss-field__control">{$content.INPUT}</span>
+      </div>
+    </div>
+  </section>
+</div>
 </form>

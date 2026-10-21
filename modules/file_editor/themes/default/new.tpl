@@ -1,14 +1,22 @@
-<!--Comentario:  He agregado variables para que se muestre la misma vista de la 160-->
-<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" >
-    <tr>
-        <td width="8%" align="right">{$file.LABEL}: </td>
-        <td width="12%" align="left" nowrap>{$file.INPUT}</td>
-        <td width="80%" align="left"><input class="button" type="submit" name="filter" value="{$Filter}" /></td>
-    </tr>
-    <tr width="99%" border="0" cellspacing="0" cellpadding="0" >
-        <!--Mensaje de error si no es un directorio válido-->
-        <td class="mb_message"><b>{$msj_err}</b></td>
-        </tr>
-</table>
-
-
+<div class="iss-form" style="margin-bottom:1.25rem;">
+  <section class="iss-card">
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field iss-field--full">
+        <span class="iss-field__label">{$file.LABEL}</span>
+        <span class="iss-field__control">{$file.INPUT}</span>
+      </div>
+      {if $msj_err}
+      <div class="iss-field iss-field--full">
+        <div class="iss-alert iss-alert--error">
+          <div class="iss-alert__content">{$msj_err|escape}</div>
+        </div>
+      </div>
+      {/if}
+    </div>
+    <div class="iss-form__toolbar" style="border-top:1px solid var(--iss-border); margin:0; padding:12px 18px; border-bottom:0;">
+      <div class="iss-form__buttons">
+        <input class="button" type="submit" name="filter" value="{$Filter}">
+      </div>
+    </div>
+  </section>
+</div>

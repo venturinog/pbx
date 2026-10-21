@@ -46,6 +46,13 @@ function _moduleContent(&$smarty, $module_name)
     }
 }
 
+function setNotice(&$smarty, $sMessage, $sType = 'error', $sTitle = '')
+{
+    $smarty->assign('NOTICE', $sMessage);
+    $smarty->assign('NOTICE_TYPE', $sType);
+    $smarty->assign('NOTICE_TITLE', $sTitle);
+}
+
 function display_form($smarty, $module_name, $local_templates_dir)
 {
     require_once "libs/paloSantoForm.class.php";
@@ -80,10 +87,11 @@ function download_csv($smarty)
     header('Content-disposition: attachment; filename=extensions.csv');
 
     $pLoadExtension = build_extensionsBatch($smarty);
+    if (is_null($pLoadExtension)) return;
     $r = $pLoadExtension->queryExtensions();
     
     if (!is_array($r)) {
-        print $pLoadExtension->errMsg;
+        print htmlentities($pLoadExtension->errMsg, ENT_COMPAT, 'UTF-8');
         return;
     }
     
@@ -121,41 +129,37 @@ function key_dictionary($key) {
 function delete_extensions($smarty, $module_name)
 {
     $pLoadExtension = build_extensionsBatch($smarty);
+    if (is_null($pLoadExtension)) return;
     $r = $pLoadExtension->deleteExtensions();
     if ($r) {
-        $smarty->assign("mb_title", _tr('Message'));
-        $smarty->assign("mb_message", _tr('All extensions deletes'));
+        setNotice($smarty, _tr('All extensions deletes'), 'success', _tr('Message'));
     } else {
-        $smarty->assign("mb_title", _tr('Error'));
-        $smarty->assign("mb_message", _tr('Could not delete the database').': '.$pLoadExtension->errMsg);
+        setNotice($smarty, _tr('Could not delete the database').': '.$pLoadExtension->errMsg, 'error', _tr('ERROR'));
     }
 }
 
 function upload_csv($smarty, $module_name)
 {
     if (!preg_match('/.csv$/', $_FILES['csvfile']['name'])) {
-        $smarty->assign("mb_title", _tr('Validation Error'));
-        $smarty->assign("mb_message", _tr('Invalid file extension.- It must be csv'));
+        setNotice($smarty, _tr('Invalid file extension.- It must be csv'), 'error', _tr('Validation Error'));
         return;
     }
     if (!is_uploaded_file($_FILES['csvfile']['tmp_name'])) {
-        $smarty->assign("mb_title", _tr('Error'));
-        $smarty->assign("mb_message", _tr('Possible file upload attack. Filename') ." :". $_FILES['csvfile']['name']);
+        setNotice($smarty, _tr('Possible file upload attack. Filename') ." :". $_FILES['csvfile']['name'], 'error', _tr('ERROR'));
         return;
     }
 
     $pLoadExtension = build_extensionsBatch($smarty);
+    if (is_null($pLoadExtension)) return;
     if (!$pLoadExtension->loadExtensionsCSV($_FILES['csvfile']['tmp_name'])) {
-        $smarty->assign("mb_title", _tr('Error'));
-        $smarty->assign("mb_message", $pLoadExtension->errMsg);
+        setNotice($smarty, $pLoadExtension->errMsg, 'error', _tr('ERROR'));
         return;
     }
     if (!$pLoadExtension->applyExtensions()) {
-        $smarty->assign("mb_title", _tr('Error'));
-        $smarty->assign("mb_message", $pLoadExtension->errMsg);
+        setNotice($smarty, $pLoadExtension->errMsg, 'error', _tr('ERROR'));
         return;
     }
-    $smarty->assign('mb_message', _tr('Total extension updated').": ".$pLoadExtension->getNumBatch()."<br />");
+    setNotice($smarty, _tr('Total extension updated').": ".$pLoadExtension->getNumBatch(), 'success', _tr('Message'));
 }
 
 function build_extensionsBatch($smarty)
@@ -172,7 +176,7 @@ function build_extensionsBatch($smarty)
 
     $pDB = new paloDB($dsnAsterisk);
     if(!empty($pDB->errMsg)) {
-        $smarty->assign("mb_message", _tr('Error when connecting to database')."<br/>".$pDB->errMsg);
+        setNotice($smarty, _tr('Error when connecting to database').': '.$pDB->errMsg, 'error', _tr('ERROR'));
         return NULL;
     }
 

@@ -1,32 +1,28 @@
-<!--<form method="POST" enctype="multipart/form-data">
-
-Comentario:  He agregado variables para que se muestre la misma vista de la 160
-
--->
-
 <form method="POST" enctype="multipart/form-data">
+<div class="iss-form">
+  <div class="iss-form__toolbar">
+    <div class="iss-form__buttons">
+      <input class="button" type="submit" name="execute" value="{$execute}">
+    </div>
+  </div>
 
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <section class="iss-card">
+    <header class="iss-card__header"><i class="ti ti-terminal-2"></i> {$asterisk}</header>
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field iss-field--full">
+        <span class="iss-field__label">{$command}</span>
+        <span class="iss-field__control">
+          <input class="form-control" type="text" name="txtCommand" size="70" value="{$txtCommand}" autocomplete="off">
+        </span>
+      </div>
+    </div>
+  </section>
 
-		<tr>
-			<td align="right">{$command}: </td>
-			<td><input name="txtCommand" type="text" size="70" value="{$txtCommand}"></td>
-		</tr>
-
-		<tr>
-			<td>&nbsp;</td>
-			<td>
-				<input type="submit" class="button" value="{$execute}">
-			</td>
-		</tr>
-
-		<tr>
-			<td height="8">&nbsp;</td>
-			<td><hr>
-<pre style="font-family: monospace;">
-{$RESPUESTA_SHELL}
-</pre>
-			</td>
-		</tr>
-</table>
+  <section class="iss-card">
+    <header class="iss-card__header"><i class="ti ti-code"></i> {$result}</header>
+    <div class="iss-card__body">
+      <div class="iss-console"><pre>{$RESPUESTA_SHELL}</pre></div>
+    </div>
+  </section>
+</div>
 </form>

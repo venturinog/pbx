@@ -27,6 +27,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "Conference" => "Conference",
 "State" => "State",
+"Device" => "Device",
 "Past Conferences" => "Past Conferences",
 "Current Conferences" => "Current Conferences",
 "Future Conferences" => "Future Conferences",

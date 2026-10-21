@@ -298,15 +298,20 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrC
     $smarty->assign("wait_for_leader", _tr("Wait for Leader"));
     $smarty->assign("enable_web_conf", _tr("Enable Web Conference"));
 
-    $pConference = new paloSantoConference($pDB);
-    while(true)
-    {
-        $number = rand(0,99999);
-        $existe = $pConference->ConferenceNumberExist($number);
-        if(!$existe)
+    // El número se genera sólo al abrir el formulario. Si ya viene uno en el
+    // POST (re-render tras un error de validación) se conserva el que el
+    // usuario tenía a la vista, en lugar de sustituirlo por otro aleatorio.
+    if (!isset($_POST['conference_number']) || $_POST['conference_number'] === '') {
+        $pConference = new paloSantoConference($pDB);
+        while(true)
         {
-            $_POST['conference_number'] = $number;
-            break;
+            $number = rand(0,99999);
+            $existe = $pConference->ConferenceNumberExist($number);
+            if(!$existe)
+            {
+                $_POST['conference_number'] = $number;
+                break;
+            }
         }
     }
 
@@ -327,9 +332,8 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrC
     }
     $smarty->assign('WEBCONF_CONTENT', $content);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", _tr("Conference"), $_POST);
-    $contenidoModulo = "<form  method='post' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
-    return $contenidoModulo;
+    return $htmlForm;
 }
 
 function createFieldForm()
@@ -509,9 +513,12 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrC
             'userWaitLeader'    =>  ($_POST['user_options_3'] == 'on'),
         ));
     if (is_null($id_cbmysql_conference)) {
-        $smarty->assign("mb_message", _tr('Unable to create conference').': '.$pConference->errMsg);
-        $contenidoModulo = new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrConfig, $dsnAsterisk);
-        return $contenidoModulo;
+        // El aviso va en la propia página: mb_message lo pinta la shell y bajo
+        // el layout de pestañas el iframe sólo imprime el contenido del módulo.
+        $sAviso = '<div class="iss-alert iss-alert--error"><div class="iss-alert__title">'
+            .htmlentities(_tr('ERROR'), ENT_COMPAT, 'UTF-8').'</div>'
+            .'<div class="iss-alert__content">'.htmlentities(_tr('Unable to create conference').': '.$pConference->errMsg, ENT_COMPAT, 'UTF-8').'</div></div>';
+        return $sAviso.new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrConfig, $dsnAsterisk);
     }
     if (!($bSoporteWebConf && isset($_POST['enable_webconf']))) {
         header("Location: ?menu=$module_name");
@@ -632,7 +639,7 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     $smarty->assign("accion", "show_callers");
 
     $arrFormElements = array(
-                            "device"  => array(     "LABEL"                  => "DEVICE",
+                            "device"  => array(     "LABEL"                  => _tr("Device"),
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "SELECT",
                                                     "INPUT_EXTRA_PARAM"      => $arrDevices,
@@ -704,6 +711,7 @@ function caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
 
     $device = getParameter("device");
 
+    $sAviso = '';
     if($device != null)
     {
         if(preg_match('/^[0-9]+$/i', $device))
@@ -711,21 +719,25 @@ function caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
             $callerId = _tr('Conference'). "<$room>";
             $result = $pConference->InviteCaller($dsn_agi_manager, $room, $device, $callerId);
             if(!$result)
-            {
-                $smarty->assign("mb_title", _tr('ERROR').":");
-                $smarty->assign("mb_message", _tr("The device couldn't be added to the conference"));
-            }else sleep(3);
+                $sAviso = _tr("The device couldn't be added to the conference");
+            else sleep(3);
         }else{
-            $smarty->assign("mb_title", _tr('ERROR').":");
-            $smarty->assign("mb_message", _tr("The device must be numeric"));
+            $sAviso = _tr("The device must be numeric");
         }
     }
     else{
-        $smarty->assign("mb_title", _tr('ERROR').":");
-        $smarty->assign("mb_message", _tr("The device wasn't write"));
+        $sAviso = _tr("The device wasn't write");
     }
 
-    return show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
+    // El aviso va en la propia página: mb_message lo pinta la shell y bajo el
+    // layout de pestañas el iframe sólo imprime el contenido del módulo.
+    if ($sAviso !== '') {
+        $sAviso = '<div class="iss-alert iss-alert--error"><div class="iss-alert__title">'
+            .htmlentities(_tr('ERROR'), ENT_COMPAT, 'UTF-8').'</div>'
+            .'<div class="iss-alert__content">'.htmlentities($sAviso, ENT_COMPAT, 'UTF-8').'</div></div>';
+    }
+
+    return $sAviso.show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
 }
 
 function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrConfig, $dsnAsterisk)
@@ -775,9 +787,7 @@ function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $oForm->setViewMode();
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", _tr("Conference"), $arrData);
 
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-
-    return $contenidoModulo;
+    return $htmlForm;
 }
 
 /******* Funciones creadas para ayudar a integración de conferencias web ********/
