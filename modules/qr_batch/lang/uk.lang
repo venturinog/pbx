@@ -31,6 +31,5 @@ $arrLangModule=array(
 	"Issabel Host/IP Address" => "Issabel Хост/IP Адреса",
 	"Phone Brand" => "Марка Телефону",
 	"Close" => "Закрити",
-	"Add Hostname" => "Додати Хост",
 );
 ?>

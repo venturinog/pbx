@@ -33,7 +33,6 @@ function _moduleContent(&$smarty, $module_name)
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
 
     $arrConf = array_merge($arrConf,$arrConfModule);
 
@@ -46,42 +45,66 @@ function _moduleContent(&$smarty, $module_name)
     $allips = $myQR->getIPs();
     $templates = $myQR->getAvailableTemplates();
 
-    $arrLangEscaped = array_map('escapeQuote', $arrLang);
+    /* El campo de Host/IP es un input con datalist: no hay opción preseleccionada
+     * por el navegador como en un <select>, así que el valor por defecto se fija
+     * aquí. Se conserva el que llegue por POST para no perderlo al recargar. */
+    $asteriskIp = getParameter('asteriskip');
+    if (!is_string($asteriskIp) || trim($asteriskIp) === '') {
+        $asteriskIp = count($allips) > 0 ? $allips[0] : '';
+    } else {
+        $asteriskIp = trim($asteriskIp);
+    }
 
     $smarty->assign(array(
         'MODULE_NAME'       =>  $module_name,
         'LABEL_QR'          =>  _tr("Display List of QR Configuration codes"),
         'ISSABEL_HOST_IP'   =>  _tr("Issabel Host/IP Address"),
         'ALL_IP'            =>  $allips,
+        'ASTERISK_IP'       =>  $asteriskIp,
+        'HOSTNAME'          =>  _qrBatchHostname(),
         'TEMPLATES'         =>  $templates,
         'QRCODE_GENERATOR'  =>  _tr("Generate QR Code list for softphones"),
         'GENERATE'          =>  _tr("Generate"),
         'BRAND'             =>  _tr("Phone Brand"),
         'CLOSE'             =>  _tr("Close"),
-        'LANG'              =>  $arrLangEscaped,
     ));
 
     switch (getParameter('action')) {
     case 'qrlist':
-        return qr_list($smarty, $local_templates_dir, $_REQUEST, $arrLangEscaped);
+        return qr_list($smarty, $local_templates_dir, $_REQUEST);
     default:
         return $smarty->fetch("$local_templates_dir/qrbatch.tpl");
     }
 }
 
-function qr_list($smarty, $local_templates_dir, $request, $arrLangEscaped)
+/* Sugerencia para el datalist: el host con el que se está abriendo la GUI, que
+ * es el que usan los softphones. Se sanea antes de pintarlo. */
+function _qrBatchHostname()
+{
+    $host = isset($_SERVER['HTTP_HOST']) ? (string)$_SERVER['HTTP_HOST'] : '';
+    return preg_match('/^[A-Za-z0-9._:\[\]-]{1,255}$/', $host) ? $host : '';
+}
+
+function qr_list($smarty, $local_templates_dir, $request)
 {
     $myQR = new IssabelQRConfig();
 
     $pLoadExtension = build_extensionsBatch($smarty);
+    if (is_null($pLoadExtension)) {
+        // build_extensionsBatch() ya dejó el motivo en errMsg; sin esta salida
+        // se seguía con una llamada a método sobre null (error fatal en PHP 8).
+        return '<div class="iss-alert iss-alert--error"><div class="iss-alert__content">'
+            .htmlentities(_tr('Error when connecting to database'), ENT_COMPAT, 'UTF-8')
+            .'</div></div>';
+    }
     $r = $pLoadExtension->queryExtensions();
 
-    $brand  = $request['template'];
+    $brand    = isset($request['template']) ? $request['template'] : '';
     $template = $myQR->getTemplate($brand);
 
-    $server_ip = $request['asteriskip'];
+    $server_ip = isset($request['asteriskip']) ? trim($request['asteriskip']) : '';
     if (!is_array($r)) {
-        print $pLoadExtension->errMsg;
+        print htmlentities($pLoadExtension->errMsg, ENT_COMPAT, 'UTF-8');
         return;
     }
     $codes=array();
@@ -99,7 +122,6 @@ function qr_list($smarty, $local_templates_dir, $request, $arrLangEscaped)
     }
     $smarty->assign("codes", $codes);
     $smarty->assign("names", $names);
-    $smarty->assign("LANG",  $arrLangEscaped);
 
     return $smarty->fetch("$local_templates_dir/qrlist.tpl");
 }
@@ -119,7 +141,7 @@ function build_extensionsBatch($smarty)
 
     $pDB = new paloDB($dsnAsterisk);
     if(!empty($pDB->errMsg)) {
-        $smarty->assign("mb_message", _tr('Error when connecting to database')."<br/>".$pDB->errMsg);
+        // El llamador imprime el aviso: aquí sólo se informa el motivo.
         return NULL;
     }
 
@@ -127,10 +149,5 @@ function build_extensionsBatch($smarty)
     $arrAST  = $pConfig->leer_configuracion(false);
 
     return new paloSantoExtensionsBatch($pDB, $arrAST, $arrAMP);
-}
-
-function escapeQuote($val) {
-   $val = addcslashes($val, '"');
-   return $val;
 }
 

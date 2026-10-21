@@ -6,6 +6,5 @@ $arrLangModule=array(
     "Issabel Host/IP Address" => "Issabel Host/IP Address",
     "Phone Brand" => "Phone Brand",
     "Close" => "Close",
-    "Add Hostname" => "Add Hostname",
 );
 ?>
