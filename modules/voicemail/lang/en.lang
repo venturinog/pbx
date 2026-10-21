@@ -52,6 +52,11 @@ $arrLangModule=array(
 "Download" => "Download",
 "Listen" => "Listen",
 "no_extension_assigned" => "There is no extension number associated with the current user. You can associate an extension number to your user by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
-"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension",
+"Database error" => "Database error",
+"ACL error" => "Access control error",
+"Check All" => "Check All",
+"Uncheck All" => "Uncheck All",
+"voicemail_spool_unavailable" => "The voicemail directory %s does not exist or cannot be read. Asterisk creates it once the voicemail context is active."
 );
 ?>

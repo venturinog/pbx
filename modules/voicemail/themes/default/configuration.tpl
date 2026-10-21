@@ -1,12 +1,11 @@
+<form method="POST">
 <div class="iss-form">
   <div class="iss-form__toolbar">
     {if $mode ne 'view'}
       <span class="iss-form__hint"><span class="iss-required">*</span> {$REQUIRED_FIELD}</span>
     {/if}
     <div class="iss-form__buttons">
-      {if $Show}
-        <input class="button" type="submit" name="save" value="{$SAVE}">
-      {/if}
+      <input class="button" type="submit" name="save" value="{$SAVE}">
       <input class="button" type="submit" name="cancel" value="{$CANCEL}">
     </div>
   </div>
@@ -54,3 +53,4 @@
     </div>
   </section>
 </div>
+</form>

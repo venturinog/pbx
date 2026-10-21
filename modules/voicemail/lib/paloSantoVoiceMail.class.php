@@ -37,11 +37,27 @@ class paloSantoVoiceMail
 
     function listVoicemail($param)
     {
+        $directorios = array();
         if (isset($param['extension'])) {
             if (ctype_digit($param['extension']))
                 $directorios[] = $param['extension'];
         } else {
-            $directorios = array_filter(scandir(DEFAULT_ASTERISK_VOICEMAIL_BASEDIR), 'ctype_digit');
+            /* El directorio base lo crea Asterisk cuando el contexto de
+             * voicemail está activo: en un PBX sin voicemail configurado no
+             * existe. scandir() devuelve false en ese caso, y pasarlo a
+             * array_filter() es un TypeError fatal en PHP 8. */
+            $baseDir = DEFAULT_ASTERISK_VOICEMAIL_BASEDIR;
+            if (!is_dir($baseDir) || !is_readable($baseDir)) {
+                $this->errMsg = '(internal) Voicemail directory '.$baseDir
+                    .' is missing or not readable';
+                return array();
+            }
+            $lista = scandir($baseDir);
+            if (!is_array($lista)) {
+                $this->errMsg = '(internal) Could not read voicemail directory '.$baseDir;
+                return array();
+            }
+            $directorios = array_filter($lista, 'ctype_digit');
         }
         $ts_inicio = isset($param['date_start']) ? strtotime($param['date_start']) : NULL;
         $ts_final = isset($param['date_end']) ? strtotime($param['date_end']) : NULL;
@@ -50,8 +66,10 @@ class paloSantoVoiceMail
         $ts = array();
         foreach ($directorios as $directorio) {
             $voicemailPath = DEFAULT_ASTERISK_VOICEMAIL_BASEDIR."/$directorio/INBOX";
-            if (!is_dir($voicemailPath)) continue;
-            foreach (scandir($voicemailPath) as $file) {
+            if (!is_dir($voicemailPath) || !is_readable($voicemailPath)) continue;
+            $mensajes = scandir($voicemailPath);
+            if (!is_array($mensajes)) continue;
+            foreach ($mensajes as $file) {
                 if (strtolower(substr($file, -4)) == '.txt') {
                     $pConfig = new paloConfig($voicemailPath, $file, "=", "[[:space:]]*=[[:space:]]*");
                     $arrVoiceMailDes = $pConfig->leer_configuracion(FALSE);
@@ -164,7 +182,12 @@ class paloSantoVoiceMail
         );
 
         $new_content = array();
-        foreach (file(ASTERISK_VOICEMAIL_CONF) as $l) {
+        $lineas = file(ASTERISK_VOICEMAIL_CONF);
+        if (!is_array($lineas)) {
+            $this->errMsg = "Could not read ".ASTERISK_VOICEMAIL_CONF;
+            return FALSE;
+        }
+        foreach ($lineas as $l) {
             list($old_vmext, $old_vmparam) = $this->_parseVoicemailContext(trim($l));
             if (!is_null($old_vmext) && $new_vmext == $old_vmext) {
                 if (!is_null($new_vmparam)) {
@@ -189,7 +212,16 @@ class paloSantoVoiceMail
 
     function loadConfiguration($extension)
     {
-        foreach (file(ASTERISK_VOICEMAIL_CONF) as $l) {
+        if (!file_exists(ASTERISK_VOICEMAIL_CONF)) {
+            $this->errMsg = "File ".ASTERISK_VOICEMAIL_CONF." does not exist";
+            return NULL;
+        }
+        $lineas = file(ASTERISK_VOICEMAIL_CONF);
+        if (!is_array($lineas)) {
+            $this->errMsg = "Could not read ".ASTERISK_VOICEMAIL_CONF;
+            return NULL;
+        }
+        foreach ($lineas as $l) {
             list($vmext, $vmparam) = $this->_parseVoicemailContext(trim($l));
             if (!is_null($vmext) && $extension == $vmext)
                 return $vmparam;

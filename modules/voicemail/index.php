@@ -47,11 +47,15 @@ function _moduleContent(&$smarty, $module_name)
     //segun el usuario que esta logoneado consulto si tiene asignada extension para buscar los voicemails
     $pDB = new paloDB($arrConf['issabel_dsn']['acl']);
     if (!empty($pDB->errMsg)) {
-        return "ERROR DE DB: $pDB->errMsg <br>";
+        return '<div class="iss-alert iss-alert--error"><div class="iss-alert__content">'
+            ._tr('Database error').': '.htmlentities($pDB->errMsg, ENT_COMPAT, 'UTF-8')
+            .'</div></div>';
     }
     $pACL = new paloACL($pDB);
     if (!empty($pACL->errMsg)) {
-        return "ERROR DE ACL: $pACL->errMsg <br>";
+        return '<div class="iss-alert iss-alert--error"><div class="iss-alert__content">'
+            ._tr('ACL error').': '.htmlentities($pACL->errMsg, ENT_COMPAT, 'UTF-8')
+            .'</div></div>';
     }
     $user = isset($_SESSION['issabel_user'])?$_SESSION['issabel_user']:"";
     $extension = $pACL->getUserExtension($user);
@@ -60,8 +64,10 @@ function _moduleContent(&$smarty, $module_name)
     // Sólo el administrador puede consultar con $extension == NULL
     if (is_null($extension)) {
         if (!hasModulePrivilege($user, $module_name, 'reportany')) {
-            $smarty->assign("mb_message", "<b>"._tr("contact_admin")."</b>");
-            return "";
+            // Una página en blanco deja al usuario sin explicación: mb_message
+            // lo pinta la shell y bajo el layout de pestañas no se ve.
+            return '<div class="iss-alert iss-alert--warning"><div class="iss-alert__content">'
+                ._tr("contact_admin").'</div></div>';
         }
     }
 
@@ -99,6 +105,8 @@ function reportVoicemails($smarty, $module_name, $local_templates_dir, $user, $e
     $bPuedeDescargar = hasModulePrivilege($user, $module_name, 'downloadany');
 
     $smarty->assign("Filter",_tr('Show'));
+    $smarty->assign("LBL_CHECK_ALL", _tr('Check All'));
+    $smarty->assign("LBL_UNCHECK_ALL", _tr('Uncheck All'));
     //formulario para el filtro
     $arrFormElements = createFieldFormVoiceList();
     $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -173,6 +181,15 @@ function reportVoicemails($smarty, $module_name, $local_templates_dir, $user, $e
     $paloVoice = new paloSantoVoiceMail();
     $rs = $paloVoice->listVoicemail($param);
 
+    // El aviso va en la propia página: mb_message lo pinta la shell con
+    // severidad de error, y esto es información de configuración del PBX.
+    $sAviso = '';
+    if (!empty($paloVoice->errMsg)) {
+        $sAviso = '<div class="iss-alert iss-alert--warning"><div class="iss-alert__content">'
+            .htmlentities(sprintf(_tr('voicemail_spool_unavailable'), DEFAULT_ASTERISK_VOICEMAIL_BASEDIR), ENT_COMPAT, 'UTF-8')
+            .'</div></div>';
+    }
+
     $limit = 15;
     $oGrid->setLimit($limit);
     $oGrid->setTotal(count($rs));
@@ -223,9 +240,7 @@ function reportVoicemails($smarty, $module_name, $local_templates_dir, $user, $e
     $oGrid->deleteList(_tr("Are you sure you wish to delete voicemails?"),"submit_eliminar",_tr("Delete"));
     $oGrid->showFilter($htmlFilter);
     $contenidoModulo  = $oGrid->fetchGrid();
-    if (strpos($contenidoModulo, '<form') === FALSE)
-    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>$contenidoModulo</form>";
-    return $contenidoModulo;
+    return $sAviso.$contenidoModulo;
 }
 
 function form_config($smarty, $module_name, $local_templates_dir, $ext)
@@ -263,9 +278,7 @@ function form_config($smarty, $module_name, $local_templates_dir, $ext)
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/configuration.tpl",_tr("Configuration"), $_POST);
 
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-
-    return $contenidoModulo;
+    return $htmlForm;
 }
 
 function save_config($smarty, $module_name, $local_templates_dir, $ext)
@@ -276,16 +289,20 @@ function save_config($smarty, $module_name, $local_templates_dir, $ext)
     $arrForm = createFieldFormConfig();
     $oForm = new paloForm($smarty, $arrForm);
 
-    if(!$oForm->validateForm($_POST) || $_POST['password'] != $_POST['password_confir']){
-        $smarty->assign("mb_title", "Validation Error");
+    $password        = isset($_POST['password']) ? $_POST['password'] : '';
+    $passwordConfirm = isset($_POST['password_confir']) ? $_POST['password_confir'] : '';
+    $bPasswordsIguales = ($password === $passwordConfirm);
+
+    if(!$oForm->validateForm($_POST) || !$bPasswordsIguales){
+        $smarty->assign("mb_title", _tr("Validation Error"));
         $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>'The following fields contain errors':</b><br/>";
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
         if(is_array($arrErrores) && count($arrErrores) > 0){
             foreach($arrErrores as $k=>$v)
                 $strErrorMsg .= "$k, ";
         }
 
-        if($_POST['password'] != $_POST['password_confir']) $strErrorMsg .= "Confirm Password";
+        if(!$bPasswordsIguales) $strErrorMsg .= _tr("Confirm Password");
 
         $smarty->assign("mb_message", $strErrorMsg);
         return false;
@@ -310,7 +327,7 @@ function save_config($smarty, $module_name, $local_templates_dir, $ext)
     if( $bandera == true )
         return true;
     else{
-        $smarty->assign("mb_title", "Error");
+        $smarty->assign("mb_title", _tr('ERROR'));
         $smarty->assign("mb_message", $paloVoice->errMsg);
         return false;
     }

@@ -51,5 +51,6 @@ $arrLangModule = array(
     "Listen" => "Escuchar",
     "no_extension_assigned" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
     "contact_admin" => "No hay número de extensión asociado con el usuario actual. Por favor contáctese con el administrador para que le asigne una extensión",
+    "voicemail_spool_unavailable" => "El directorio de buzones %s no existe o no se puede leer. Asterisk lo crea cuando el contexto de voicemail está activo."
 );
 ?>

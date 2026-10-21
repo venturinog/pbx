@@ -58,5 +58,6 @@ $arrLangModule = array(
     "records" => "записей",
     "No records match the filter criteria" => "Нет записей, соответствующих критериям фильтра",
     "of" => "из",
+    "voicemail_spool_unavailable" => "Каталог голосовой почты %s не существует или недоступен для чтения. Asterisk создаёт его, когда контекст голосовой почты активен."
 );
 ?>

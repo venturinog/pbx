@@ -1,10 +1,23 @@
-    <table width="99%" cellpadding="4" cellspacing="0" border="0" align="center">
-      <tr class="letra12">
-        <td width="7%" align="right">{$date_start.LABEL}:</td>
-        <td width="10%" align="left" nowrap>{$date_start.INPUT}</td>
-        <td width="7%" align="right">{$date_end.LABEL}:</td>
-        <td width="10%" align="left" nowrap>{$date_end.INPUT}</td>
-        <td align="left"><input class="button" type="submit" name="filter" value="{$Filter}" ></td>
-      </tr>
-   </table>
-<a href="javascript:seleccionar_checkbox(1)">Marcar todos</a> | <a href="javascript:seleccionar_checkbox(0)">Desmarcar Todos</a>
+<div class="iss-form" style="margin-bottom:1.25rem;">
+  <section class="iss-card">
+    <div class="iss-card__body iss-formgrid">
+      <div class="iss-field">
+        <span class="iss-field__label">{$date_start.LABEL}</span>
+        <span class="iss-field__control">{$date_start.INPUT}</span>
+      </div>
+      <div class="iss-field">
+        <span class="iss-field__label">{$date_end.LABEL}</span>
+        <span class="iss-field__control">{$date_end.INPUT}</span>
+      </div>
+    </div>
+    <div class="iss-form__toolbar" style="border-top:1px solid var(--iss-border); margin:0; padding:12px 18px; border-bottom:0;">
+      <div class="iss-form__hint">
+        <a href="javascript:seleccionar_checkbox(1)">{$LBL_CHECK_ALL}</a>
+        <a href="javascript:seleccionar_checkbox(0)">{$LBL_UNCHECK_ALL}</a>
+      </div>
+      <div class="iss-form__buttons">
+        <input class="button" type="submit" name="filter" value="{$Filter}">
+      </div>
+    </div>
+  </section>
+</div>

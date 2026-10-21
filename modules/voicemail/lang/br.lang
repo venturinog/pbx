@@ -52,6 +52,7 @@ $arrLangModule=array(
 "Download" => "Baixar",
 "Listen" => "Ouvir",
 "no_extension_assigned" => "Não há número de ramal associado ao usuário atual. Você pode associar um número de ramal ao seu usuário clicando em <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
-"contact_admin" => "Não há número de ramal associado ao usuário atual. Entre em contato com o administrador para atribuir uma extensão"
+"contact_admin" => "Não há número de ramal associado ao usuário atual. Entre em contato com o administrador para atribuir uma extensão",
+"voicemail_spool_unavailable" => "O diretório de caixas postais %s não existe ou não pode ser lido. O Asterisk o cria quando o contexto de correio de voz está ativo."
 );
 ?>
