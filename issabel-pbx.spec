@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 12
+Release: 17
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,70 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-17
+- Drop bootstrap-select from QR Configurations. Each combo box painted three
+  arrows: bootstrap-select's own Bootstrap 3 caret, the Bootstrap 5
+  .dropdown-toggle::after comes with the theme, and the .form-select
+  background chevron that the widget copied from the select onto its wrapper
+  div. The page now uses the theme controls: a native select for the phone
+  brand and a text field with a datalist of the detected addresses for the
+  host, which keeps the "add a hostname" ability without a Bootstrap 3
+  widget on a Bootstrap 5 theme. bootstrap-select.js, bootstrap-select.css,
+  javascript.js and custom.css are removed, so the module no longer loads
+  85 KB of vendored code on every visit, and the lang/escapeQuote machinery
+  that only served the widget is gone with them.
+
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-16
+- Stop the voicemail page from failing when the spool is missing.
+  scandir() returns false when the directory cannot be opened, and passing
+  false to array_filter() is a fatal TypeError in PHP 8: on a PBX without
+  the voicemail context, where /var/spool/asterisk/voicemail/default does
+  not exist, the module answered 500 instead of an empty list. The library
+  now checks the directory and reports it, and the page shows the missing
+  path as a warning. The unreadable mailbox and the missing voicemail.conf
+  cases are guarded the same way. The French language file, the only one
+  stored as ISO-8859-1, is converted to UTF-8, and the byte order mark that
+  preceded the opening tag of the Persian one is removed so that including
+  it does not emit output before the headers. file_editor and monitoring
+  get the same guard for scandir() and glob().
+
+* Tue Oct 20 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
+- Bring the PBX pages onto the Modern form kit. asterisk_cli, file_editor,
+  conference (filter), voicemail (filter), qr_batch and monitoring still used
+  legacy tables, font tags and a Bootstrap 3 panel with hardcoded colors.
+  They now use the theme grid, cards and the console primitive for command
+  output. The file and voicemail filters no longer wrap a table inside the
+  grid filter row. qr_batch drops the undefined panel-blue class and the
+  glyphicon, and its stylesheet reads the theme tokens. The dead
+  conference/wrapper.tpl template is removed. The Device label of the caller
+  list is translated.
+
+* Tue Oct 20 2026 Issabel Foundation <info@issabel.org> - 6.0.0-14
+- Fix the defects found while auditing the PBX pages against STYLE.md.
+  The voicemail configuration never painted its Save button (the Show flag
+  was never assigned) and compared the two password fields before checking
+  that they had been submitted. Conference regenerated the random conference
+  number on every render. Monitoring emitted Bootstrap 3 font tags and
+  inline colors, read a POST key that is absent on every page view, rendered
+  the filter form twice and kept its styles in a template style block with
+  hardcoded colors. qr_batch and extensions_batch dereferenced null when the
+  Asterisk database was unreachable. Recordings, extensions_batch, festival,
+  conference and file_editor reported their results through mb_title and
+  mb_message, which the shell paints outside the module iframe, so the user
+  never saw them; they now render a theme alert inside the page. Users
+  without an extension got a blank page instead of an explanation. The
+  remaining hardcoded Spanish and untranslated literals use language keys.
+
+* Tue Oct 20 2026 Issabel Foundation <info@issabel.org> - 6.0.0-13
+- Send the CSRF token with the PBX module forms. The form element lived in
+  the PHP wrapper for conference, festival, recordings and voicemail, so
+  issabelCsrf::injectField found no <form> to patch. The asterisk_cli
+  template carried a commented-out <form> that swallowed the token, and
+  qr_batch serves its templates with Smarty::fetch(), which skips the
+  injector, so it prints the field explicitly. The dead form fallback in the
+  voicemail grid is removed: paloSantoGrid always emits its own tokenized
+  form.
+
 * Fri Oct 16 2026 Issabel Foundation <info@issabel.org> - 6.0.0-12
 - Escape the rpm queryformat used to record the pre-version on upgrade.
   The VERSION and RELEASE macros were expanded at build time, so %pre always
