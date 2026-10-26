@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 18
+Release: 19
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,12 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Mon Oct 26 2026 Issabel Foundation <info@issabel.org> - 6.0.0-19
+- Bump the release so upgrades re-run %post against the new issabel-dbprocess,
+  which installs the meetme database from the schema when it is missing instead
+  of only emitting `USE meetme;`. This heals installs where the original %post
+  was deferred to firstboot and the spool was never applied.
+
 * Mon Oct 26 2026 Issabel Foundation <info@issabel.org> - 6.0.0-18
 - Put the Festival switch back on the Modern theme. The page still loaded the
   legacy iButton plugin from its own theme directory, which paloSantoNavigation
