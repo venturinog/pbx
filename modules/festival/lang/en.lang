@@ -36,8 +36,6 @@ $arrLangModule=array(
 "Festival has been successfully deactivated" => "Festival has been successfully deactivated",
 "Festival could not be deactivated" => "Festival could not be deactivated",
 "Dismiss" => "Dismiss",
-"On" => "On",
-"Off" => "Off",
 "Unknown action" => "Unknown action"
 );
 ?>

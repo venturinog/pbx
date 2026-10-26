@@ -25,24 +25,22 @@ $(document).ready(function () {
         }
     }
 
-    var labels = window.ISSABEL_FESTIVAL || {};
+    /* El control es el switch del tema: paloForm ya emite
+     * form-check form-switch. El plugin iButton del tema legacy lo sustituía
+     * por un slider de imágenes, así que sólo hay que escuchar su cambio.
+     */
+    $("input[name='chkoldstatus']").on('change', function () {
+        var festival_activate = $(this).is(':checked') ? "activate" : "deactivate";
+        $("#status").val(festival_activate);
 
-    $(":checkbox[name='chkoldstatus']").iButton({
-        labelOn: labels.on || 'On',
-        labelOff: labels.off || 'Off',
-        change: function ($input) {
-            var festival_activate = $input.is(":checked") ? "activate" : "deactivate";
-            $("#status").val(festival_activate);
-
-            var arrAction            = new Array();
-            arrAction["action"]  = "change";
-            arrAction["menu"]    = "festival";
-            arrAction["rawmode"] = "yes";
-            arrAction["status"]  = festival_activate;
-            request("index.php", arrAction, false,
-                function (arrData, statusResponse, error) {
-                    showMessage(arrData);
-                });
-        }
+        var arrAction            = new Array();
+        arrAction["action"]  = "change";
+        arrAction["menu"]    = "festival";
+        arrAction["rawmode"] = "yes";
+        arrAction["status"]  = festival_activate;
+        request("index.php", arrAction, false,
+            function (arrData, statusResponse, error) {
+                showMessage(arrData);
+            });
     });
 });

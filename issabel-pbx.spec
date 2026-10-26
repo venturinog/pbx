@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 17
+Release: 18
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -316,6 +316,14 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Mon Oct 26 2026 Issabel Foundation <info@issabel.org> - 6.0.0-18
+- Put the Festival switch back on the Modern theme. The page still loaded the
+  legacy iButton plugin from its own theme directory, which paloSantoNavigation
+  injects on every visit, and used it to replace the theme switch that paloForm
+  already emits with an image slider. The handler now listens on the native
+  form-check-input, and jquery.ibutton.js, jquery.ibutton.css, the slider
+  sprite and the On/Off labels only that widget needed are gone.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-17
 - Drop bootstrap-select from QR Configurations. Each combo box painted three
   arrows: bootstrap-select's own Bootstrap 3 caret, the Bootstrap 5

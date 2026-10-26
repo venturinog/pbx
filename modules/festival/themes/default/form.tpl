@@ -1,5 +1,4 @@
 <form method="POST">
-<script>window.ISSABEL_FESTIVAL = {$FESTIVAL_LABELS};</script>
 <div class="iss-form">
   <section class="iss-card">
     <header class="iss-card__header"><i class="ti ti-volume"></i> {$title}</header>

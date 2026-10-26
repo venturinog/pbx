@@ -71,7 +71,6 @@ function viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf)
     else
         $_DATA["status"] = "off";
     $smarty->assign("SAVE", _tr("Save"));
-    $smarty->assign("FESTIVAL_LABELS", json_encode(array('on' => _tr('On'), 'off' => _tr('Off'))));
     $smarty->assign("icon", "modules/$module_name/images/pbx_tools_festival.png");
     $content = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Festival"), $_DATA);
 
