@@ -2,7 +2,7 @@
 Summary: Issabel PBX Module
 Name:    issabel-pbx
 Version: 6.0.0
-Release: 19
+Release: 20
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -13,8 +13,6 @@ Requires(pre): issabel-my_extension >= 5.0.0-1
 Requires(pre): issabel-system >= 5.0.0-1
 Requires(pre): vsftpd
 #Requires(pre): asterisk >= 1.8
-Requires: festival >= 1.95
-Requires: picotts
 Requires(pre): issabelPBX >= 2.12.0
 
 #Requires: issabel-endpointconfig2 >= 4.0.0-1
@@ -69,14 +67,9 @@ mv modules/ $RPM_BUILD_ROOT/var/www/html/
 # ** /asterisk path ** #
 mkdir -p $RPM_BUILD_ROOT/etc/asterisk/
 
-# ** service festival ** #
-mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-mkdir -p $RPM_BUILD_ROOT/var/log/festival/
-
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
 mkdir -p      $RPM_BUILD_ROOT/usr/share/issabel/module_installer/%{name}-%{version}-%{release}/
-mkdir -p      $RPM_BUILD_ROOT/usr/share/issabel/privileged/
 
 # crons config
 mv setup/etc/cron.daily/asterisk_cleanup      $RPM_BUILD_ROOT/etc/cron.daily/
@@ -103,18 +96,11 @@ rmdir setup/var/www/html
 rmdir setup/var/www
 rmdir setup/var
 
-# Moviendo archivos festival y sip_notify_custom_issabel.conf
+# Moviendo sip_notify_custom_issabel.conf
 chmod +x setup/etc/asterisk/sip_notify_custom_issabel.conf
-chmod +x setup/etc/init.d/festival
 mv setup/etc/asterisk/sip_notify_custom_issabel.conf      $RPM_BUILD_ROOT/etc/asterisk/
-mv setup/etc/init.d/festival                              $RPM_BUILD_ROOT/etc/init.d/
-mv setup/usr/share/issabel/privileged/*                   $RPM_BUILD_ROOT/usr/share/issabel/privileged/
 mv setup/etc/httpd/                                       $RPM_BUILD_ROOT/etc/
-rmdir setup/etc/init.d
 rmdir setup/etc/asterisk
-rmdir setup/usr/share/issabel/privileged
-
-rmdir setup/usr/share/issabel setup/usr/share setup/usr
 
 chmod +x setup/migrationFilesMonitor*php
 mv setup/     $RPM_BUILD_ROOT/usr/share/issabel/module_installer/%{name}-%{version}-%{release}/
@@ -272,8 +258,14 @@ if [ -e /tmp/vsftpd.user_list ] ; then
     rm -f /tmp/vsftpd.user_list
 fi
 
-# Remove old endpoints_batch menu item
+# Remove obsolete menu items and their ACL resources
 issabel-menuremove endpoints_batch
+issabel-menuremove festival
+
+# Clean up the old Festival service and its log directory. rmdir only removes
+# the directory when it is empty, so existing logs are preserved.
+systemctl disable festival >/dev/null 2>&1 || :
+rmdir /var/log/festival 2>/dev/null || :
 
 chown asterisk.asterisk /var/www/html -R
 
@@ -300,7 +292,6 @@ fi
 #   file /var/lib/asterisk/agi-bin conflicts with file from package asterisk22
 # Se empaquetan solo los ficheros, que es lo que este paquete aporta.
 /var/lib/asterisk/moh/*
-/var/log/festival
 /usr/share/issabel/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_issabel.conf
 /var/www/html/admin/issabel_issabelpbx_auth.php
 %defattr(-, root, root)
@@ -309,13 +300,19 @@ fi
 %defattr(644, root, root)
 %config(noreplace) /etc/httpd/conf.d/*
 %defattr(755, root, root)
-/etc/init.d/festival
 /usr/bin/asterisk.reload
-/usr/share/issabel/privileged/*
 /var/lib/asterisk/agi-bin/*
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Thu Nov 05 2026 Issabel Foundation <info@issabel.org> - 6.0.0-20
+- Replace Festival with Piper. The Festival status page, its init script and
+  privileged helper, the Festival weather demo AGIs and the menu entry are
+  removed, and %post deletes the stale menu and ACL rows so existing installs
+  do not keep a dead Tools item. The festival and picotts requirements are
+  dropped; announcements and calendar reminders already use picotts.agi, which
+  now drives Piper.
+
 * Mon Oct 26 2026 Issabel Foundation <info@issabel.org> - 6.0.0-19
 - Bump the release so upgrades re-run %post against the new issabel-dbprocess,
   which installs the meetme database from the schema when it is missing instead

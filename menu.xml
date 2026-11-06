@@ -94,11 +94,6 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
-    <menuitem menuid="festival"            desc="Festival"             parent="tools"     module="yes" link=""      order="84">
-      <permissions>
-        <group id="1" name="administrator" desc="total access"></group>
-      </permissions>
-    </menuitem>
     <menuitem menuid="recordings"            desc="Recordings"             parent="tools"     module="yes" link=""      order="85">
       <permissions>
         <group id="1" name="administrator" desc="total access"></group>
